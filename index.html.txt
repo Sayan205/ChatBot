@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f1f1f1;
+        }
+        .chat-container {
+            width: 400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .messages .message {
+            margin: 10px 0;
+        }
+        .messages .user {
+            text-align: right;
+        }
+        .messages .bot {
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button class="btn" id="send-btn">Send</button>
+        <button class="btn" id="voice-btn">🎤 Speak</button>
+    </div>
+
+    <script>
+        // Basic AI Logic (A placeholder for actual AI functionality)
+        function getBotResponse(input) {
+            if(input.toLowerCase().includes("hello")) {
+                return "Hi there! How can I assist you today?";
+            } else if(input.toLowerCase().includes("how are you")) {
+                return "I'm just a bot, but I'm doing great! How about you?";
+            } else {
+                return "Sorry, I didn't understand that.";
+            }
+        }
+
+        // Add message to the chat
+        function addMessage(sender, text) {
+            const messagesContainer = document.getElementById("messages");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Send button click event
+        document.getElementById("send-btn").addEventListener("click", () => {
+            const userInput = document.getElementById("user-input").value.trim();
+            if(userInput) {
+                addMessage("user", userInput);
+                document.getElementById("user-input").value = "";
+                const botResponse = getBotResponse(userInput);
+                addMessage("bot", botResponse);
+                speakText(botResponse);
+            }
+        });
+
+        // Speech recognition (using Web Speech API)
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+
+        document.getElementById("voice-btn").addEventListener("click", () => {
+            recognition.start();
+        });
+
+        recognition.onresult = function(event) {
+            const spokenText = event.results[0][0].transcript;
+            document.getElementById("user-input").value = spokenText;
+            document.getElementById("send-btn").click();
+        };
+
+        // Speech synthesis (text to speech)
+        function speakText(text) {
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "en-US";
+            window.speechSynthesis.speak(speech);
+        }
+
+    </script>
+</body>
+</html>
